@@ -35,12 +35,9 @@
           BorderBrush="#E5E7EB">
             <StackPanel Spacing="24" Padding="0,24,0,24" HorizontalAlignment="Center">
                 <!-- Logo Button -->
-
                 <Image Source="/Assets/grafik.jpeg" Width="30" Height="30"/>
 
-
                 <!-- Navigation Icons -->
-
                 <Button HorizontalAlignment="Center" Width="32" Height="32"  Background="Transparent" Padding="0" ToolTipService.ToolTip="Search">
                     <Image Source="/Assets/Search.png" Width="20" Height="20"/>
                 </Button>
@@ -102,7 +99,7 @@
                     <StackPanel>
                         <TextBlock Text="Answer:" FontWeight="SemiBold" Margin="0,0,0,12"/>
                         <TextBlock x:Name="OutputBox" TextWrapping="Wrap" Margin="0,0,0,24" Height="Auto" 
-                              Text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."/>
+                              Text=""/>
 
                         <Rectangle Height="1" Fill="Black" Margin="0,0,0,16"/>
 
@@ -196,9 +193,8 @@
                     </StackPanel>
                 </Button>
 
-
-                <!-- Hidden File Inputs -->
-                <StackPanel x:Name="FileInputControls" Visibility="Collapsed">
+                <!-- File Input Controls (Hidden by default, shown when needed) -->
+                <StackPanel x:Name="FileInputControls" Visibility="Collapsed" Spacing="10">
                     <TextBlock Text="Pilih File Dokumen (Excel / Word / PDF):" FontWeight="Bold"/>
                     <Button x:Name="SelectFileButton" Content="Browse File" Click="SelectFileButton_Click" Width="150"/>
 
@@ -228,7 +224,7 @@
                         <!-- TextBox for Input -->
                         <TextBox x:Name="PromptBox" Grid.Row="0" PlaceholderText="Instruct what you want to make....." 
                             AcceptsReturn="True" TextWrapping="Wrap" MinHeight="96" MaxLength="1000"
-                            BorderThickness="0" Background="Transparent"/>
+                            BorderThickness="0" Background="Transparent" TextChanged="PromptBox_TextChanged"/>
 
                         <!-- Action Buttons -->
                         <Grid Grid.Row="1" Margin="0,12,0,0">
