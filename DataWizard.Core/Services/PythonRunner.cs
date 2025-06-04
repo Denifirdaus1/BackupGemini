@@ -1,3 +1,4 @@
+
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -6,8 +7,8 @@ namespace DataWizard.Core.Services
 {
     public static class PythonRunner
     {
-        private static readonly string pythonExePath = @"C:\Python312\python.exe"; // Ganti sesuai path Python kamu
-        private static readonly string scriptPath = @"C:\Project PBTGM\DataWizard.App\PythonEngine\main.py";
+        private static readonly string pythonExePath = @"C:\Users\Lenovo\AppData\Local\Programs\Python\Python313\python.exe";
+        private static readonly string scriptPath = @"C:\Project PBTGM\PythonEngine\main.py";
 
         public static async Task<string> RunPythonScriptAsync(string filePath, string outputTxtPath, string prompt, string outputFormat, string mode)
         {
