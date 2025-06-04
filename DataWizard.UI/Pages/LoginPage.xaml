@@ -41,6 +41,18 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Padding" Value="0"/>
         </Style>
+
+        <Style x:Key="LoadingButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#6B7280"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="250"/>
+            <Setter Property="Height" Value="48"/>
+        </Style>
     </Page.Resources>
 
     <Grid>
@@ -49,131 +61,124 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Left side - Optimized layout -->
-        <Grid Grid.Column="0" Background="#FAFAFA" Padding="24" VerticalAlignment="Top">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <!-- Left side - Form with ScrollViewer -->
+        <Grid Grid.Column="0" Background="#FAFAFA" Padding="24">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel HorizontalAlignment="Center" MaxWidth="320">
+                    <!-- Logo section -->
+                    <StackPanel HorizontalAlignment="Center" Margin="0,20,0,30">
+                        <Image x:Name="LogoImage" Source="ms-appx:///Assets/logo.png" Width="120" Height="120" Margin="0,0,0,12"/>
+                        <TextBlock x:Name="FormTitle" Text="Welcome Back" FontWeight="ExtraBold" FontSize="24" TextAlignment="Center" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="FormSubtitle" Text="Welcome Back, Please Enter your details" FontSize="13" TextAlignment="Center"/>
+                    </StackPanel>
 
-            <!-- Logo section - More compact -->
-            <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,-20,0,20">
-                <Image x:Name="LogoImage" Source="ms-appx:///Assets/logo.png" Width="120" Height="120" Margin="0,0,0,12"/>
-                <TextBlock x:Name="FormTitle" Text="Welcome Back" FontWeight="ExtraBold" FontSize="24" TextAlignment="Center" Margin="0,0,0,4"/>
-                <TextBlock x:Name="FormSubtitle" Text="Welcome Back, Please Enter your details" FontSize="13" TextAlignment="Center"/>
-            </StackPanel>
-
-            <!-- Form content -->
-            <StackPanel Grid.Row="1" Width="320" HorizontalAlignment="Center" Margin="0,0,0,20">
-                <!-- Toggle -->
-                <Grid Background="White" CornerRadius="8" BorderBrush="#E5E7EB" BorderThickness="1" Margin="0,0,0,16" Width="320" Height="48">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button x:Name="SignInButton" Grid.Column="0" Content="Sign In" Style="{StaticResource ToggleButtonStyle}" 
-                            Width="160" Height="48"
-                            Background="White" Click="SignInButton_Click"/>
-                    <Button x:Name="SignUpButton" Grid.Column="1" Content="Sign Up" Style="{StaticResource ToggleButtonStyle}" 
-                            Width="160" Height="48"
-                            Background="#E5E7EB" Click="SignUpButton_Click"/>
-                </Grid>
-
-                <!-- Login form -->
-                <StackPanel x:Name="LoginFormPanel" Spacing="12">
-                    <!-- Username -->
-                    <Grid Background="White" CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1" Padding="16,12" Width="320" Height="60">
+                    <!-- Toggle Buttons -->
+                    <Grid Background="White" CornerRadius="8" BorderBrush="#E5E7EB" BorderThickness="1" Margin="0,0,0,16" Width="320" Height="48">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <Image Grid.Column="0" Source="/Assets/User.png" Width="16" Height="16" Margin="0,0,16,0"/>
-
-                        <StackPanel Grid.Column="1">
-                            <TextBlock Text="Username" FontSize="10" FontWeight="SemiBold" Foreground="#9CA3AF"/>
-                            <TextBox x:Name="UsernameTextBox" PlaceholderText="Enter your username" 
-                                     Width="230" BorderThickness="0" FontSize="13" FontWeight="SemiBold" 
-                                     Background="Transparent" TextChanged="TextBox_TextChanged"/>
-                        </StackPanel>
-
-                        <Grid x:Name="UsernameCheckmark" Grid.Column="2" Visibility="Collapsed" Width="20" Height="20">
-                            <Ellipse Fill="#7ED9C0"/>
-                            <Path Stroke="White" StrokeThickness="1.5" StrokeLineJoin="Round"
-                                  Data="M6,10.5 L8.5,13 L14,7" />
-                        </Grid>
+                        <Button x:Name="SignInButton" Grid.Column="0" Content="Sign In" Style="{StaticResource ToggleButtonStyle}" 
+                                Width="160" Height="48" Background="White" Click="SignInButton_Click"/>
+                        <Button x:Name="SignUpButton" Grid.Column="1" Content="Sign Up" Style="{StaticResource ToggleButtonStyle}" 
+                                Width="160" Height="48" Background="#E5E7EB" Click="SignUpButton_Click"/>
                     </Grid>
 
-                    <!-- Password -->
-                    <Grid Background="White" CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1" Padding="16,12" Width="320" Height="60">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+                    <!-- Form Content -->
+                    <StackPanel x:Name="LoginFormPanel" Spacing="12">
+                        <!-- Username Field -->
+                        <Grid Background="White" CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1" Padding="16,12" Width="320" Height="60">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                        <Image Grid.Column="0" Source="/Assets/lock.png" Width="16" Height="16" Margin="0,0,16,0"/>
+                            <Image Grid.Column="0" Source="/Assets/User.png" Width="16" Height="16" Margin="0,0,16,0"/>
 
-                        <StackPanel Grid.Column="1">
-                            <TextBlock Text="Password" FontSize="10" FontWeight="SemiBold" Foreground="#9CA3AF"/>
-                            <PasswordBox x:Name="PasswordBox" PlaceholderText="Enter your password" 
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Username" FontSize="10" FontWeight="SemiBold" Foreground="#9CA3AF"/>
+                                <TextBox x:Name="UsernameTextBox" PlaceholderText="Enter your username" 
                                          Width="230" BorderThickness="0" FontSize="13" FontWeight="SemiBold" 
-                                         Background="Transparent" PasswordChanged="PasswordBox_PasswordChanged"/>
+                                         Background="Transparent" TextChanged="TextBox_TextChanged"/>
+                            </StackPanel>
+
+                            <Grid x:Name="UsernameCheckmark" Grid.Column="2" Visibility="Collapsed" Width="20" Height="20">
+                                <Ellipse Fill="#7ED9C0"/>
+                                <Path Stroke="White" StrokeThickness="1.5" StrokeLineJoin="Round"
+                                      Data="M6,10.5 L8.5,13 L14,7" />
+                            </Grid>
+                        </Grid>
+
+                        <!-- Password Field -->
+                        <Grid Background="White" CornerRadius="12" BorderBrush="#E5E7EB" BorderThickness="1" Padding="16,12" Width="320" Height="60">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Image Grid.Column="0" Source="/Assets/lock.png" Width="16" Height="16" Margin="0,0,16,0"/>
+
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Password" FontSize="10" FontWeight="SemiBold" Foreground="#9CA3AF"/>
+                                <PasswordBox x:Name="PasswordBox" PlaceholderText="Enter your password" 
+                                             Width="230" BorderThickness="0" FontSize="13" FontWeight="SemiBold" 
+                                             Background="Transparent" PasswordChanged="PasswordBox_PasswordChanged"/>
+                            </StackPanel>
+
+                            <Grid x:Name="PasswordCheckmark" Grid.Column="2" Visibility="Collapsed" Width="20" Height="20">
+                                <Ellipse Fill="#7ED9C0"/>
+                                <Path Stroke="White" StrokeThickness="1.5" StrokeLineJoin="Round"
+                                      Data="M6,10.5 L8.5,13 L14,7" />
+                            </Grid>
+                        </Grid>
+
+                        <!-- Additional Fields Panel (for Sign Up) -->
+                        <StackPanel x:Name="AdditionalFieldsPanel" Spacing="12"/>
+
+                        <!-- Loading indicator -->
+                        <StackPanel x:Name="LoadingPanel" Visibility="Collapsed" HorizontalAlignment="Center" Margin="0,8,0,8">
+                            <ProgressRing IsActive="True" Width="24" Height="24" Margin="0,0,0,8"/>
+                            <TextBlock x:Name="LoadingText" Text="Processing..." FontSize="12" HorizontalAlignment="Center" Foreground="#9CA3AF"/>
                         </StackPanel>
 
-                        <Grid x:Name="PasswordCheckmark" Grid.Column="2" Visibility="Collapsed" Width="20" Height="20">
-                            <Ellipse Fill="#7ED9C0"/>
-                            <Path Stroke="White" StrokeThickness="1.5" StrokeLineJoin="Round"
-                                  Data="M6,10.5 L8.5,13 L14,7" />
+                        <!-- Submit Button -->
+                        <Button x:Name="SubmitButton" Content="Sign In" Style="{StaticResource PrimaryButtonStyle}" 
+                                Margin="0,16,0,0" Click="SubmitButton_Click"/>
+                    </StackPanel>
+
+                    <!-- OR Divider and Social login -->
+                    <StackPanel Width="320" HorizontalAlignment="Center" Margin="0,20,0,20">
+                        <!-- OR Divider -->
+                        <Grid Margin="0,0,0,16" Width="320">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Rectangle Grid.Column="0" Height="1" Fill="#9CA3AF" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Or Continue With" FontSize="12" FontWeight="SemiBold" Margin="12,0"/>
+                            <Rectangle Grid.Column="2" Height="1" Fill="#9CA3AF" VerticalAlignment="Center"/>
                         </Grid>
-                    </Grid>
 
-                    <!-- Additional fields (Sign Up mode) -->
-                    <StackPanel x:Name="AdditionalFieldsPanel" Spacing="12"/>
-
-                    <!-- Submit button -->
-                    <Button x:Name="SubmitButton" Content="Sign In" Style="{StaticResource PrimaryButtonStyle}" Margin="0,16,0,0" Click="SubmitButton_Click"/>
+                        <!-- Social login -->
+                        <Button Style="{StaticResource SocialButtonStyle}" HorizontalAlignment="Center">
+                            <Image Source="/Assets/googel.png" Width="20" Height="20"/>
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-
-            <!-- OR Divider and Social login -->
-            <StackPanel Grid.Row="2" Width="320" HorizontalAlignment="Center">
-                <!-- OR Divider -->
-                <Grid Margin="0,0,0,16" Width="320">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Rectangle Grid.Column="0" Height="1" Fill="#9CA3AF" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="1" Text="Or Continue With" FontSize="12" FontWeight="SemiBold" Margin="12,0"/>
-                    <Rectangle Grid.Column="2" Height="1" Fill="#9CA3AF" VerticalAlignment="Center"/>
-                </Grid>
-
-                <!-- Social login -->
-                <Button Style="{StaticResource SocialButtonStyle}" HorizontalAlignment="Center">
-                    <Image Source="/Assets/googel.png" Width="20" Height="20"/>
-                </Button>
-            </StackPanel>
+            </ScrollViewer>
         </Grid>
 
-        <!-- Right side - Unchanged -->
+        <!-- Right side - Background -->
         <Grid Grid.Column="1">
-            <Image Source="/Assets/bgls.png" 
-           Stretch="UniformToFill"/>
-
-            <!-- Semi-transparent overlay -->
+            <Image Source="/Assets/bgls.png" Stretch="UniformToFill"/>
             <Rectangle Fill="#B9E9F9" Opacity="0.3"/>
-
-            <Image Source="/Assets/login.png" 
-           Stretch="Uniform" 
-           Margin="48"
-           HorizontalAlignment="Center"
-           VerticalAlignment="Center"/>
+            <Image Source="/Assets/login.png" Stretch="Uniform" Margin="48"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
     </Grid>
 </Page>
