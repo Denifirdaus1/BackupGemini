@@ -1,159 +1,101 @@
+using Microsoft.UI;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.UI;
 using System;
-using Microsoft.UI;
-using DataWizard.UI.Services;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using Microsoft.UI.Xaml.Shapes;
-using Windows.UI.Text;
-using Microsoft.UI.Text;
 using System.Collections.Generic;
-using DataWizardUI.Helpers;
-using Microsoft.UI.Dispatching;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.System;
 
 namespace DataWizard.UI.Pages
 {
     public sealed partial class HomePage : Page
     {
-        private readonly DatabaseService _dbService;
         private ObservableCollection<OutputFile> _recentFiles;
         private ObservableCollection<Folder> _folders;
         private ObservableCollection<ChartData> _chartData;
-        private readonly ChartHelper _chartHelper;
-        private readonly int _currentUserId = 1; // hardcoded
+        private ObservableCollection<HistoryItem> _historyItems;
 
         public HomePage()
         {
             InitializeComponent();
-            _dbService = new DatabaseService();
             _recentFiles = new ObservableCollection<OutputFile>();
             _folders = new ObservableCollection<Folder>();
             _chartData = new ObservableCollection<ChartData>();
+            _historyItems = new ObservableCollection<HistoryItem>();
 
-
-            _chartHelper = new ChartHelper(
-                "Server=DESKTOP-01G7KT1\\SQLEXPRESS;Database=Quicklisticks;Trusted_Connection=True;");
-
-            // Mulai satu-satunya pipeline inisialisasi data & UI
-            _ = InitializePageAsync();
+            // Initialize with sample data
+            InitializeSampleData();
+            LoadData();
         }
 
+        private void InitializeSampleData()
+        {
+            // Sample history items
+            _historyItems.Add(new HistoryItem
+            {
+                InputType = "CSV",
+                OutputFormat = "Excel",
+                ProcessDate = DateTime.Now.AddHours(-2)
+            });
+            _historyItems.Add(new HistoryItem
+            {
+                InputType = "JSON",
+                OutputFormat = "Word",
+                ProcessDate = DateTime.Now.AddDays(-1)
+            });
+            _historyItems.Add(new HistoryItem
+            {
+                InputType = "XML",
+                OutputFormat = "Excel",
+                ProcessDate = DateTime.Now.AddDays(-3)
+            });
 
+            // Sample folders
+            _folders.Add(new Folder { FolderName = "Project Documents" });
+            _folders.Add(new Folder { FolderName = "Data Analysis" });
+            _folders.Add(new Folder { FolderName = "Reports" });
+
+            // Sample recent files
+            _recentFiles.Add(new OutputFile
+            {
+                FileName = "Sales_Report.xlsx",
+                FileType = "Excel",
+                CreatedDate = DateTime.Now.AddHours(-1)
+            });
+            _recentFiles.Add(new OutputFile
+            {
+                FileName = "Customer_Data.docx",
+                FileType = "Word",
+                CreatedDate = DateTime.Now.AddDays(-2)
+            });
+
+            // Sample chart data
+            _chartData.Add(new ChartData { Label = "Excel", Value = 45 });
+            _chartData.Add(new ChartData { Label = "Word", Value = 30 });
+            _chartData.Add(new ChartData { Label = "PDF", Value = 25 });
+        }
 
         private async void LoadData()
         {
             try
             {
-                var recentFiles = await _dbService.GetRecentFilesAsync(_currentUserId);
-                var folders = await _dbService.GetUserFoldersAsync(_currentUserId);
-                var chartData = await _dbService.GetFileTypeStatsAsync(_currentUserId);
-                var history = await _dbService.GetRecentHistoryAsync(_currentUserId, 5);
+                // Simulate loading delay
+                await Task.Delay(500);
 
-                _recentFiles.Clear();
-                _folders.Clear();
-                _chartData.Clear();
-
-                foreach (var file in recentFiles)
-                {
-                    _recentFiles.Add(file);
-                }
-
-                foreach (var folder in folders)
-                {
-                    _folders.Add(folder);
-                }
-
-                foreach (var data in chartData)
-                {
-                    _chartData.Add(data);
-                }
-
-                UpdateRecentFiles(history);
+                UpdateRecentFiles(_historyItems.ToList());
                 UpdateFolders();
                 UpdateChart();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error loading data: {ex.Message}");
-                await ShowErrorDialog("Failed to load data", ex.Message);
-            }
-        }
-        private async Task InitializePageAsync()
-        {
-            await LoadDataAsync();   // di sini juga sudah termasuk refresh chart
-        }
-
-        private async Task LoadChartDataAsync()
-{
-    try
-    {
-        Debug.WriteLine("Memulai load data chart...");
-
-        var (values, labels) = await _chartHelper.GetFileTypeUsageDataAsync(_currentUserId);
-
-        Debug.WriteLine($"Data yang diterima:");
-        Debug.WriteLine($"Labels: {string.Join(", ", labels)}");
-        Debug.WriteLine($"Values: {string.Join(", ", values)}");
-
-        // Gunakan TryEnqueue sebagai ganti EnqueueAsync
-        DispatcherQueue.TryEnqueue(() =>
-        {
-            _chartHelper.ConfigureColumnChart(UsageChart, values, labels);
-        });
-    }
-    catch (Exception ex)
-    {
-        Debug.WriteLine($"Error LoadChartDataAsync: {ex}");
-    }
-}
-
-        private void UsageChart_Loaded(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("Chart control loaded");
-            _ = LoadChartDataAsync();
-        }
-
-        private async Task LoadDataAsync()
-        {
-            try
-            {
-                // 1. Ambil data Recent Files, Folders, ChartData (untuk binding lama), dan History
-                var recentFiles = await _dbService.GetRecentFilesAsync(_currentUserId);
-                var folders = await _dbService.GetUserFoldersAsync(_currentUserId);
-                var chartData = await _dbService.GetFileTypeStatsAsync(_currentUserId);
-                var history = await _dbService.GetRecentHistoryAsync(_currentUserId, 5);
-
-                // 2. Update koleksi ObservableCollection milikmu
-                _recentFiles.Clear();
-                foreach (var file in recentFiles)
-                    _recentFiles.Add(file);
-
-                _folders.Clear();
-                foreach (var folder in folders)
-                    _folders.Add(folder);
-
-                _chartData.Clear();
-                foreach (var data in chartData)
-                    _chartData.Add(data);
-
-                // 3. Update UI panel Recent Files dan Folders
-                UpdateRecentFiles(history);
-                UpdateFolders();
-
-                // 4. Refresh ScottPlot chart dengan data baru dari DB
-                var (values, labels) = await _chartHelper.GetFileTypeUsageDataAsync();
-                _chartHelper.ConfigureColumnChart(UsageChart, values, labels);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error loading data: {ex}");
-                await ShowErrorDialog("Failed to load data", ex.Message);
+                await ShowErrorDialog("Error", $"Failed to load data: {ex.Message}");
             }
         }
 
@@ -193,7 +135,7 @@ namespace DataWizard.UI.Pages
                 var textPanel = new StackPanel();
                 textPanel.Children.Add(new TextBlock
                 {
-                    Text = $"{item.InputType} ? {item.OutputFormat}",
+                    Text = $"{item.InputType} → {item.OutputFormat}",
                     FontWeight = FontWeights.SemiBold
                 });
                 textPanel.Children.Add(new TextBlock
@@ -229,6 +171,7 @@ namespace DataWizard.UI.Pages
             if (diff.TotalDays < 1) return $"{(int)diff.TotalHours}h ago";
             return date.ToString("dd MMM yyyy");
         }
+
         private string FormatFileSize(long bytes)
         {
             string[] sizes = { "B", "KB", "MB", "GB" };
@@ -243,6 +186,7 @@ namespace DataWizard.UI.Pages
 
             return $"{len:0.##} {sizes[order]}";
         }
+
         private void UpdateFolders()
         {
             FoldersPanel.Children.Clear();
@@ -254,10 +198,12 @@ namespace DataWizard.UI.Pages
                 });
             }
         }
+
         private void UpdateChart()
         {
             // Update chart visualization based on _chartData
             // Implementation depends on your charting library
+            Debug.WriteLine($"Chart data updated with {_chartData.Count} items");
         }
 
         private string GetFileType(string fileName)
@@ -273,43 +219,67 @@ namespace DataWizard.UI.Pages
                     return "Unknown";
             }
         }
-        // ... [Rest of your existing methods remain unchanged] ...
+
+        // Method to add new history item programmatically
+        public void AddHistoryItem(string inputType, string outputFormat)
+        {
+            var newItem = new HistoryItem
+            {
+                InputType = inputType,
+                OutputFormat = outputFormat,
+                ProcessDate = DateTime.Now
+            };
+            _historyItems.Insert(0, newItem); // Add to beginning
+            UpdateRecentFiles(_historyItems.ToList());
+        }
+
+        // Method to add new folder programmatically
+        public void AddFolder(string folderName)
+        {
+            _folders.Add(new Folder { FolderName = folderName });
+            UpdateFolders();
+        }
+
         #region Event Handlers
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             // Handle Add button click
+            Debug.WriteLine("Add button clicked");
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             // Handle Search button click
+            Debug.WriteLine("Search button clicked");
         }
 
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
             // Already on home page
+            Debug.WriteLine("Home button clicked - already on home page");
         }
 
         private void FolderButton_Click(object sender, RoutedEventArgs e)
         {
             // Navigate to folders page
+            Debug.WriteLine("Folder button clicked");
         }
 
         private void HistoryButton_Click(object sender, RoutedEventArgs e)
         {
             // Navigate to history page
+            Debug.WriteLine("History button clicked");
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             // Navigate to settings page
+            Debug.WriteLine("Settings button clicked");
         }
 
         private void UserProfileButton_Click(object sender, RoutedEventArgs e)
         {
             // Show user profile menu or navigate to profile page
-            // You can implement this based on your requirements
-            // For now, we'll just show a simple message
             Debug.WriteLine("User profile button clicked");
 
             // Example: Show a flyout or dialog
@@ -329,6 +299,34 @@ namespace DataWizard.UI.Pages
         }
         #endregion
     }
+
+    // Data models
+    public class HistoryItem
+    {
+        public string InputType { get; set; }
+        public string OutputFormat { get; set; }
+        public DateTime ProcessDate { get; set; }
+    }
+
+    public class OutputFile
+    {
+        public string FileName { get; set; }
+        public string FileType { get; set; }
+        public DateTime CreatedDate { get; set; }
+    }
+
+    public class Folder
+    {
+        public string FolderName { get; set; }
+    }
+
+    public class ChartData
+    {
+        public string Label { get; set; }
+        public double Value { get; set; }
+    }
+
+    // UI Components
     public sealed class FileItem : Grid
     {
         public FileItem()
